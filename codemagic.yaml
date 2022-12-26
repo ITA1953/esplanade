@@ -1,0 +1,64 @@
+workflows :
+  hello-world:
+    name: Hello World worlflow
+    instance_type: mac_pro
+    max_build_duration: 100
+    environment:
+    groups :
+    -keystore_credentials
+    -app_storecredentials
+    vars:
+    GOOGLE_PLAY_TRACK: "beta"
+    flutter: stable
+    xcode: latest
+    cocoapods: 1.9.1
+    node: 12.14.0
+    npm: 6.13.7
+    ndk: r21d
+    java: 1.8
+    ruby: 2.7.2
+    cache:
+    cache_paths:
+    -$HOME/.gradle/caches
+    -$FLUTTER_ROOT/.pub-cache
+    -$HOME/Librabry/Caches/CocoaPods
+    -$CM_BUILD_DIR/node_modules
+    triggering: 
+    events:
+    - push
+    - pull_request
+    - tag
+    branch_patterns:
+    - pattern: "*"
+    include: true
+    - pattern: develop
+    include: false
+     - pattern: feature-1
+    include: true
+    source: true
+
+    scripts:
+    - name: Get Flutter Packages
+    script: flutter packages pug get
+    - name: Build apk
+    script: flutter build apk -- release
+    - name: Build iOS
+    script: flutter build ios
+    name: SET up key properties
+    script: /
+    cat >> "$CM_BUILD_DIR/android.key.properties" <<EOF
+    storePassword=$_CM_KEYSTORE_PASSWORD
+    keyPassword=$CM_KEY_PASSWORD
+    keyAlias=$CM_KEY_ALIAS
+    storeFile=$CM_KEYSTORE_PATH
+    EOF
+
+    artifacts:
+    - build/**/outputs/apk/**/*.apk
+    - build/**/outputs/**/*.aab
+
+    publishing:
+    email:
+    recipients:
+    - atialkjm@hotmail.com
+    - requavelha69@hotmail.com
